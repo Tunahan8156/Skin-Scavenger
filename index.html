@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skin Scavenger Hunt</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Skin Scavenger Hunt</h1>
+    <input type="file" id="fileInput" accept=".json">
+    <button id="downloadButton" style="display: none;">Download File</button>
+    <br>
+    <input type="checkbox" id="customDateCheckbox"> Use Custom Date
+    <div id="dateContainer" style="display: none;">
+        <select id="dayComboBox"></select>
+        <select id="monthComboBox"></select>
+        <select id="yearComboBox"></select>
+    </div>
+    
+    <div>
+        <input type="radio" name="selection" value="brawler" checked>Brawler
+        <input type="radio" name="selection" value="theme">Theme
+        <input type="radio" name="selection" value="rarity">Rarity
+    </div>
+    
+    <select id="comboBox"></select>
+    
+    <div id="checkboxContainer"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+}
+
+h1 {
+    text-align: center;
+    color: #4a4e69;
+    margin-bottom: 20px;
+    font-size: 2.5rem;
+}
+
+input[type="file"],
+button,
+input[type="checkbox"],
+select {
+    padding: 10px;
+    border: 2px solid #4a4e69;
+    border-radius: 5px;
+    margin: 10px 0;
+    width: calc(100% - 24px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+input[type="file"]:hover,
+button:hover,
+input[type="checkbox"]:hover,
+select:hover {
+    border-color: #9a8c98;
+}
+
+button {
+    background-color: #9a8c98;
+    color: white;
+    cursor: pointer;
+    width: auto;
+}
+
+button:disabled {
+    background-color: #ccc;
+}
+
+input[type="checkbox"] {
+    width: auto;
+    margin-right: 10px;
+}
+
+#dateContainer {
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+#dateContainer select {
+    width: 32%;
+}
+
+#checkboxContainer {
+    margin-top: 20px;
+}
+
+input[type="radio"] {
+    margin: 0 10px;
+}
+
+div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 600px) {
+    h1 {
+        font-size: 2rem;
+    }
+
+    input[type="file"],
+    button,
+    input[type="checkbox"],
+    select {
+        width: 100%;
+    }
+}
