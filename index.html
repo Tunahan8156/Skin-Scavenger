@@ -5,28 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Skin Scavenger Hunt</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .skin-container {
+            max-height: 200px; 
+            overflow-y: auto; 
+            border: 1px solid #ccc; 
+            padding: 10px; 
+            margin-top: 10px; 
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Skin Scavenger Hunt</h1>
-    <input type="file" id="fileInput" accept=".json">
-    <button id="downloadButton" style="display: none;">Download File</button>
-    <br>
-    <input type="checkbox" id="customDateCheckbox"> Use Custom Date
-    <div id="dateContainer" style="display: none;">
-        <select id="dayComboBox"></select>
-        <select id="monthComboBox"></select>
-        <select id="yearComboBox"></select>
+    <div class="m">
+        <label id="header">Skin Scavenger Hunt</label>
+        <div class="buttons-container">
+            <button id="upload-file-button" class="file-button">Upload File</button>
+            <input type="file" id="file-input" accept=".json" style="display:none;" />
+            <button id="download-file-button" class="file-button">Download File</button>
+        </div>
+        <div class="date-container">
+            <select id="day-combobox" class="date-combobox"></select>
+            <select id="month-combobox" class="date-combobox"></select>
+            <select id="year-combobox" class="date-combobox"></select>
+        </div>
+        <div class="radiobutton-container">
+            <div class="individual-radiobutton-container">
+                <input type="radio" name="category" id="brawler-radiobutton" checked>
+                <label class="radio-button" for="brawler-radiobutton">Brawler</label>
+            </div>
+            <div class="individual-radiobutton-container">
+                <input type="radio" name="category" id="theme-radiobutton">
+                <label class="radio-button" for="theme-radiobutton">Theme</label>
+            </div>
+            <div class="individual-radiobutton-container">
+                <input type="radio" name="category" id="rarity-radiobutton">
+                <label class="radio-button" for="rarity-radiobutton">Rarity</label>
+            </div>
+        </div>
+        <div class="search-container">
+            <select id="search-combobox"></select>
+        </div>
+        <div class="skin-container"></div>
     </div>
-    
-    <div>
-        <input type="radio" name="selection" value="brawler" checked>Brawler
-        <input type="radio" name="selection" value="theme">Theme
-        <input type="radio" name="selection" value="rarity">Rarity
-    </div>
-    
-    <select id="comboBox"></select>
-    
-    <div id="checkboxContainer"></div>
 
     <script src="script.js"></script>
 </body>

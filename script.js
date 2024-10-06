@@ -1,189 +1,228 @@
-let skinData = {}; // This will hold the JSON data
+let dayCombobox = document.getElementById("day-combobox");
+let monthCombobox = document.getElementById("month-combobox");
+let yearCombobox = document.getElementById("year-combobox");
+let searchCombobox = document.getElementById("search-combobox");
+let skinContainer = document.querySelector(".skin-container");
 
-document.getElementById('fileInput').addEventListener('change', function(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                skinData = JSON.parse(e.target.result);
-                updateComboBox();
-                document.getElementById('downloadButton').style.display = 'block'; // Show download button
-            } catch (error) {
-                console.error('Error parsing JSON:', error);
-            }
-        };
-        reader.readAsText(file);
-    }
-});
+const rarityOrder = ["Basic", "Rare", "Super Rare", "Epic", "Mythic", "Legendary", "Hypercharge", "Coin"];
+let skinsData = {};
 
-document.getElementById('customDateCheckbox').addEventListener('change', function() {
-    const dateContainer = document.getElementById('dateContainer');
-    if (this.checked) {
-        dateContainer.style.display = 'block';
-        populateDateComboBoxes();
-    } else {
-        dateContainer.style.display = 'none';
-    }
-});
+const monthDictionary = {
+    1: "January",
+    2: "February",
+    3: "March",
+    4: "April",
+    5: "May",
+    6: "June",
+    7: "July",
+    8: "August",
+    9: "September",
+    10: "October",
+    11: "November",
+    12: "December"
+};
 
-function populateDateComboBoxes() {
-    const dayComboBox = document.getElementById('dayComboBox');
-    const monthComboBox = document.getElementById('monthComboBox');
-    const yearComboBox = document.getElementById('yearComboBox');
-
-    // Clear existing options
-    dayComboBox.innerHTML = '';
-    monthComboBox.innerHTML = '';
-    yearComboBox.innerHTML = '';
-
-    // Populate day combo box
-    for (let i = 1; i <= 31; i++) {
-        const option = document.createElement('option');
-        option.value = i;
-        option.textContent = i;
-        dayComboBox.appendChild(option);
-    }
-
-    // Populate month combo box
-    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    months.forEach((month, index) => {
-        const option = document.createElement('option');
-        option.value = index + 1;
-        option.textContent = month;
-        monthComboBox.appendChild(option);
-    });
-
-    // Populate year combo box
-    const currentYear = new Date().getFullYear();
-    for (let i = currentYear; i <= currentYear + 10; i++) {
-        const option = document.createElement('option');
-        option.value = i;
-        option.textContent = i;
-        yearComboBox.appendChild(option);
-    }
-
-    // Set default to today's date
-    const today = new Date();
-    dayComboBox.value = today.getDate();
-    monthComboBox.value = today.getMonth() + 1; // Months are 0-indexed
-    yearComboBox.value = today.getFullYear();
+function isLeapYear(year) {
+    return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
 }
 
-document.querySelectorAll('input[name="selection"]').forEach(radio => {
-    radio.addEventListener('change', updateComboBox);
-});
+function getMonthLength(year) {
+    return {
+        'January': 31,
+        'February': isLeapYear(year) ? 29 : 28,
+        'March': 31,
+        'April': 30,
+        'May': 31,
+        'June': 30,
+        'July': 31,
+        'August': 31,
+        'September': 30,
+        'October': 31,
+        'November': 30,
+        'December': 31
+    };
+}
 
-function updateComboBox() {
-    const comboBox = document.getElementById('comboBox');
-    const selectedRadio = document.querySelector('input[name="selection"]:checked').value;
+const date = new Date();
+const currentDay = date.getDate();
+const currentMonth = date.getMonth() + 1;
+const currentYear = date.getFullYear();
 
-    // Clear existing options
-    comboBox.innerHTML = '';
+for (let i = 1; i <= 12; i++) {
+    monthCombobox.add(new Option(monthDictionary[i], i));
+}
 
-    const options = new Set(); // Use a Set to avoid duplicates
+for (let i = 2019; i <= currentYear + 10; i++) {
+    yearCombobox.add(new Option(i, i));
+}
 
-    // Collect options based on the selected radio button
-    for (const skin in skinData) {
-        const skinDataItem = skinData[skin];
-        if (selectedRadio === 'brawler') {
-            options.add(skinDataItem.brawler);
-        } else if (selectedRadio === 'theme') {
-            options.add(skinDataItem.theme);
-        } else if (selectedRadio === 'rarity') {
-            options.add(skinDataItem.rarity);
+function populateDateComboboxes() {
+    const selectedMonth = parseInt(monthCombobox.value);
+    const selectedYear = parseInt(yearCombobox.value);
+    const monthLength = getMonthLength(selectedYear);
+
+    const currentDayValue = parseInt(dayCombobox.value);
+    dayCombobox.innerHTML = "";
+
+    for (let i = 1; i <= monthLength[monthDictionary[selectedMonth]]; i++) {
+        dayCombobox.add(new Option(String(i), String(i)));
+    }
+
+    if (currentDayValue > monthLength[monthDictionary[selectedMonth]]) {
+        dayCombobox.value = monthLength[monthDictionary[selectedMonth]];
+    } else {
+        dayCombobox.value = currentDayValue;
+    }
+}
+
+monthCombobox.value = currentMonth;
+yearCombobox.value = currentYear;
+populateDateComboboxes();
+dayCombobox.value = currentDay;
+
+function populateSearchCombobox() {
+    searchCombobox.innerHTML = "";
+
+    const selectedCategory = document.querySelector('input[name="category"]:checked').id;
+
+    if (selectedCategory === "brawler-radiobutton") {
+        const brawlers = new Set();
+        for (const skin in skinsData) {
+            brawlers.add(skinsData[skin].brawler);
         }
-    }
-
-    // Populate the combo box with options, sorting them appropriately
-    if (selectedRadio === 'rarity') {
-        const rarityOrder = ['Default', 'Rare', 'Super Rare', 'Epic', 'Mythic', 'Legendary', 'Hypercharge', 'Coin'];
-        rarityOrder.forEach(rarityValue => {
-            if (options.has(rarityValue)) {
-                const option = document.createElement('option');
-                option.value = rarityValue;
-                option.textContent = rarityValue;
-                comboBox.appendChild(option);
-            }
+        const brawlerArray = Array.from(brawlers).sort();
+        brawlerArray.forEach(brawler => {
+            searchCombobox.add(new Option(brawler, brawler));
         });
-    } else {
-        const sortedOptions = Array.from(options).sort(); // Sort the options alphabetically
-        sortedOptions.forEach(optionValue => {
-            const option = document.createElement('option');
-            option.value = optionValue;
-            option.textContent = optionValue;
-            comboBox.appendChild(option);
+    } else if (selectedCategory === "theme-radiobutton") {
+        const themes = new Set();
+        for (const skin in skinsData) {
+            themes.add(skinsData[skin].theme);
+        }
+        const themeArray = Array.from(themes).sort();
+        themeArray.forEach(theme => {
+            searchCombobox.add(new Option(theme, theme));
+        });
+    } else if (selectedCategory === "rarity-radiobutton") {
+        rarityOrder.forEach(rarity => {
+            searchCombobox.add(new Option(rarity, rarity));
         });
     }
 
-    // Clear existing checkboxes when updating the combo box
-    document.getElementById('checkboxContainer').innerHTML = '';
+    // Call populateSkinCheckboxes after updating searchCombobox
+    populateSkinCheckboxes();
+}
+document.querySelectorAll('input[name="category"]').forEach(radio => {
+    radio.addEventListener('change', populateSearchCombobox);
+});
 
-    // Add event listener to the combo box to show checkboxes
-    comboBox.addEventListener('change', generateCheckboxes);
+function loadSkinsData(file) {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        try {
+            skinsData = JSON.parse(event.target.result);
+            populateSearchCombobox();
+            populateSkinCheckboxes();
+        } catch (error) {
+            console.error('Error parsing JSON:', error);
+        }
+    };
+    reader.readAsText(file);
 }
 
-function generateCheckboxes() {
-    const selectedComboValue = document.getElementById('comboBox').value;
-    const selectedRadio = document.querySelector('input[name="selection"]:checked').value;
+document.getElementById("file-input").addEventListener("change", function() {
+    const file = this.files[0];
+    if (file) {
+        loadSkinsData(file);
+    }
+});
 
-    const checkboxContainer = document.getElementById('checkboxContainer');
-    checkboxContainer.innerHTML = ''; // Clear existing checkboxes
+window.onload = function() {
+    fetch('skins.json')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            skinsData = data;
+            populateSearchCombobox();
+            populateSkinCheckboxes();
+        })
+        .catch(error => {
+            console.error('Error fetching the skins.json file:', error);
+        });
+};
 
-    // Generate checkboxes based on the selected option
-    for (const skin in skinData) {
-        const skinDataItem = skinData[skin];
-        
-        if ((selectedRadio === 'brawler' && skinDataItem.brawler === selectedComboValue) ||
-            (selectedRadio === 'theme' && skinDataItem.theme === selectedComboValue) ||
-            (selectedRadio === 'rarity' && skinDataItem.rarity === selectedComboValue)) {
-            
+function populateSkinCheckboxes() {
+    skinContainer.innerHTML = "";
+
+    const selectedCategory = document.querySelector('input[name="category"]:checked').id;
+    const selectedValue = searchCombobox.value;
+
+    if (!selectedValue) return;
+
+    for (const skin in skinsData) {
+        const skinData = skinsData[skin];
+        let matches = false;
+
+        if (selectedCategory === "brawler-radiobutton" && skinData.brawler === selectedValue) {
+            matches = true;
+        } else if (selectedCategory === "theme-radiobutton" && skinData.theme === selectedValue) {
+            matches = true;
+        } else if (selectedCategory === "rarity-radiobutton" && skinData.rarity === selectedValue) {
+            matches = true;
+        }
+
+        if (matches) {
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
             checkbox.id = skin;
-            checkbox.name = skin;
-            checkbox.checked = skinDataItem.found !== null; // Check if found attribute is not null
+            checkbox.value = skin;
+
+            if (skinData.found) {
+                checkbox.checked = true;
+            }
+
             checkbox.addEventListener('change', function() {
                 if (this.checked) {
-                    // Check if custom date checkbox is checked
-                    const isCustomDateChecked = document.getElementById('customDateCheckbox').checked;
-
-                    if (isCustomDateChecked) {
-                        // Set found attribute to selected date
-                        const day = document.getElementById('dayComboBox').value;
-                        const month = document.getElementById('monthComboBox').value;
-                        const year = document.getElementById('yearComboBox').value;
-                        skinDataItem.found = `${day}/${months[month - 1]}/${year}`; // e.g. "11/July/2024"
-                    } else {
-                        // Set found attribute to today's date
-                        const today = new Date();
-                        skinDataItem.found = `${today.getDate()}/${months[today.getMonth()]}/${today.getFullYear()}`;
-                    }
+                    const selectedDate = `${dayCombobox.value}/${monthCombobox.value}/${yearCombobox.value}`;
+                    skinsData[skin].found = selectedDate;
+                    console.log(`${skin} found on ${selectedDate}`);
                 } else {
-                    skinDataItem.found = null; // Set found attribute to null if unchecked
+                    skinsData[skin].found = null;
                 }
             });
 
             const label = document.createElement('label');
             label.htmlFor = skin;
-            label.textContent = skin;
+            label.innerText = skin;
 
-            checkboxContainer.appendChild(checkbox);
-            checkboxContainer.appendChild(label);
-            checkboxContainer.appendChild(document.createElement('br')); // Line break for spacing
+            skinContainer.appendChild(checkbox);
+            skinContainer.appendChild(label);
+            skinContainer.appendChild(document.createElement('br'));
         }
     }
 }
 
-// Add functionality to download the modified JSON data
-document.getElementById('downloadButton').addEventListener('click', function() {
-    const blob = new Blob([JSON.stringify(skinData, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'modified_skins.json'; // Name of the downloaded file
-    a.click();
-    URL.revokeObjectURL(url); // Clean up
-});
+searchCombobox.addEventListener('change', populateSkinCheckboxes);
 
-const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+function downloadJSON() {
+    const dataStr = JSON.stringify(skinsData, null, 2);
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "modified_skins.json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+document.getElementById("download-file-button").addEventListener("click", downloadJSON);
+document.getElementById("upload-file-button").addEventListener("click", function() {
+    document.getElementById("file-input").click();
+});
