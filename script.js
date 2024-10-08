@@ -109,7 +109,6 @@ function populateSearchCombobox() {
         });
     }
 
-    // Call populateSkinCheckboxes after updating searchCombobox
     populateSkinCheckboxes();
 }
 document.querySelectorAll('input[name="category"]').forEach(radio => {
@@ -187,7 +186,8 @@ function populateSkinCheckboxes() {
 
             checkbox.addEventListener('change', function() {
                 if (this.checked) {
-                    const selectedDate = `${dayCombobox.value}/${monthCombobox.value}/${yearCombobox.value}`;
+                    const selectedMonthName = monthDictionary[monthCombobox.value];
+                    const selectedDate = `${dayCombobox.value}/${selectedMonthName}/${yearCombobox.value}`;
                     skinsData[skin].found = selectedDate;
                     console.log(`${skin} found on ${selectedDate}`);
                 } else {
@@ -215,7 +215,7 @@ function downloadJSON() {
 
     const a = document.createElement("a");
     a.href = url;
-    a.download = "modified_skins.json";
+    a.download = "skins.json";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
