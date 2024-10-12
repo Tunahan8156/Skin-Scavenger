@@ -180,8 +180,16 @@ function populateSkinCheckboxes() {
             checkbox.id = skin;
             checkbox.value = skin;
 
+            const label = document.createElement('label');
+            label.htmlFor = skin;
+            label.innerText = skin;
+
+            const dateSpan = document.createElement('span');
+            dateSpan.style.color = "gray";
+
             if (skinData.found) {
                 checkbox.checked = true;
+                dateSpan.innerText = ` ${skinData.found}`;
             }
 
             checkbox.addEventListener('change', function() {
@@ -189,18 +197,18 @@ function populateSkinCheckboxes() {
                     const selectedMonthName = monthDictionary[monthCombobox.value];
                     const selectedDate = `${dayCombobox.value}/${selectedMonthName}/${yearCombobox.value}`;
                     skinsData[skin].found = selectedDate;
+
+                    dateSpan.innerText = ` ${selectedDate}`;
                     console.log(`${skin} found on ${selectedDate}`);
                 } else {
                     skinsData[skin].found = null;
+                    dateSpan.innerText = "";
                 }
             });
 
-            const label = document.createElement('label');
-            label.htmlFor = skin;
-            label.innerText = skin;
-
             skinContainer.appendChild(checkbox);
             skinContainer.appendChild(label);
+            label.appendChild(dateSpan);
             skinContainer.appendChild(document.createElement('br'));
         }
     }
